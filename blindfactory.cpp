@@ -68,6 +68,7 @@ struct {
     int64_t z;
     int64_t x;
     struct {} inventory;
+    uint8_t gamestate;
 } player;
 
 int main() {
@@ -110,17 +111,23 @@ int main() {
         // Set up deltaTime
         Uint64 pretime = SDL_GetTicksNS();
 
+        struct {
+            bool leftclicked;
+            bool rightclicked;
+            bool middleclicked;
+        } mouseState = {false, false, false};
+
         // Handle quit event and mouse click events
         while (SDL_PollEvent(&event)) {
            if (event.type == SDL_EVENT_QUIT) {
                running = false;
            } else if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
                if (event.button.button == SDL_BUTTON_LEFT) {
-                   std::cout << "l" << std::endl;
+                   mouseState.leftclicked = true;
                } else if (event.button.button == SDL_BUTTON_RIGHT) {
-                   std::cout << "r" << std::endl;
+                   mouseState.rightclicked = true;
                } else if (event.button.button == SDL_BUTTON_MIDDLE) {
-                   std::cout << "m" << std::endl;
+                   mouseState.middleclicked = true;
                }
             }
         }
@@ -146,6 +153,15 @@ int main() {
         if (keys[SDL_SCANCODE_D]) {
             accumulateX += playerSpeed;
         }
+        if (keys[SDL_SCANCODE_LEFT]) {
+            mouseState.leftclicked = true;
+        }
+        if (keys[SDL_SCANCODE_RIGHT]) {
+            mouseState.rightclicked = true;
+        }
+        if (keys[SDL_SCANCODE_UP] || keys[SDL_SCANCODE_DOWN]) {
+            mouseState.middleclicked = true;
+        }
 
         // Game logic
         if(accumulateX >= 180) {
@@ -163,7 +179,15 @@ int main() {
             accumulateZ = 0;
         }
         
-        //std::cout << "Player position: (" << player.x << ", " << player.z << ")" << std::endl;
+        if( mouseState.leftclicked) {
+            std::cout << "Left click!" << std::endl;
+        }
+        if( mouseState.rightclicked) {
+            std::cout << "Right click!" << std::endl;
+        } 
+        if( mouseState.middleclicked) {
+            std::cout << "Middle click!" << std::endl;
+        }
         
         // FPS stuff
         Uint64 posttime = SDL_GetTicksNS();
