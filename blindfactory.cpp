@@ -37,6 +37,33 @@ SDL_AppResult playSound (std::string path) {
     return SDL_APP_CONTINUE;
 }
 
+void generateWorld(uint32_t heightmapSeed, uint32_t blockSeed, uint32_t biomeSeed) {
+
+    for (float x = 17; x < 32; x++) {
+        for (float z = 0; z < 16; z++) {
+            float noiseValue = SimplexNoise(heightmapSeed, 0.01).fractal(6, x, z);
+            if (noiseValue > 0.5) {
+                std::cout << "M";
+            } else if (noiseValue < -0.5) {
+                std::cout << ".";
+            }
+            else {
+                std::cout << "X";
+            }
+        }
+        std::cout << std::endl;
+    }
+}
+
+SDL_AppResult playMusic () {
+    SDL_AppResult result = SDL_APP_CONTINUE;
+    while(result == SDL_APP_CONTINUE) {
+        result = playSound("hikaru_miles.wav");
+    }
+    SDL_Delay(180000);
+    return SDL_APP_CONTINUE;
+}
+
 struct {
     int64_t z;
     int64_t x;
@@ -65,7 +92,7 @@ int main() {
     SDL_UpdateWindowSurface(window);
     
     // Background music
-    std::thread audioThread(playSound, "hikaru_miles.wav");
+    std::thread audioThread(playMusic);
     audioThread.detach();
 
     // Initialize events and keyboard state
@@ -76,17 +103,7 @@ int main() {
     int16_t accumulateZ = 0;
     int16_t playerSpeed = 1; // How many ms it takes to move one block
 
-    for (float x = 0; x < 200; x++) {
-        for (float z = 0; z < 200; z++) {
-            float noiseValue = SimplexNoise(234, 0.01).fractal(6, x, z);
-            if (noiseValue > 0) {
-                std::cout << "#";
-            } else {
-                std::cout << ".";
-            }
-        }
-        std::cout << std::endl;
-    }
+    generateWorld(1000, 0, 0);
 
     // Game loop
     while(running) {
