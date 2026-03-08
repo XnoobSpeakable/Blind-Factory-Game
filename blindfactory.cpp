@@ -105,23 +105,38 @@ int main() {
 
     generateWorld(1000, 0, 0);
 
+    struct {
+        bool left;
+        bool right;
+        bool middle;
+    } mouseState;
+
     // Game loop
     while(running) {
         // Set up deltaTime
         Uint64 pretime = SDL_GetTicksNS();
 
         // Handle quit event and mouse click events
+        mouseState = {false, false, false};
         while (SDL_PollEvent(&event)) {
            if (event.type == SDL_EVENT_QUIT) {
                running = false;
-           } else if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
+           } else if (event.type == SDL_EVENT_MOUSE_BUTTON_UP) {
                if (event.button.button == SDL_BUTTON_LEFT) {
-                   std::cout << "l" << std::endl;
+                   mouseState.left = true;
                } else if (event.button.button == SDL_BUTTON_RIGHT) {
-                   std::cout << "r" << std::endl;
+                   mouseState.right = true;
                } else if (event.button.button == SDL_BUTTON_MIDDLE) {
-                   std::cout << "m" << std::endl;
+                   mouseState.middle = true;
                }
+            } else if (event.type == SDL_EVENT_KEY_UP) {
+                if (event.key.key == SDLK_LEFT) {
+                    mouseState.left = true;
+                } else if (event.key.key == SDLK_RIGHT) {
+                    mouseState.right = true;
+                } else if (event.key.key == SDLK_UP || event.key.key == SDLK_DOWN) {
+                    mouseState.middle = true;
+                }
             }
         }
         if(keys[SDL_SCANCODE_LSHIFT] || keys[SDL_SCANCODE_RSHIFT]) {
@@ -163,6 +178,15 @@ int main() {
             accumulateZ = 0;
         }
         
+        if (mouseState.left) {
+            std::cout << "Left click!" << std::endl;
+        }
+        if (mouseState.right) {
+            std::cout << "Right click!" << std::endl;
+        }
+        if (mouseState.middle) {
+            std::cout << "Middle click!" << std::endl;
+        }
         //std::cout << "Player position: (" << player.x << ", " << player.z << ")" << std::endl;
         
         // FPS stuff
