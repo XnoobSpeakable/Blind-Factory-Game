@@ -106,16 +106,18 @@ int main() {
 
     generateWorld(1000, 0, 0);
 
+    struct mouseStates {
+        bool leftclicked;
+        bool rightclicked;
+        bool middleclicked;
+    };
+
+    mouseStates mouseState = {0, 0, 0};
+
     // Game loop
     while(running) {
         // Set up deltaTime
         Uint64 pretime = SDL_GetTicksNS();
-
-        struct {
-            bool leftclicked;
-            bool rightclicked;
-            bool middleclicked;
-        } mouseState = {false, false, false};
 
         // Handle quit event and mouse click events
         while (SDL_PollEvent(&event)) {
