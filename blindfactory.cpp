@@ -192,14 +192,14 @@ int main() {
     } menu;
     menu = {0, 0, 0};
     bool initialized = false;
-
+    std::cout << menu.level << std::endl;
     checkForWorlds();
-
+    //std::cout << "0" << std::endl;
     // Game loop
     while(running) {
         // Set up deltaTime
         Uint64 pretime = SDL_GetTicksNS();
-
+        //std::cout << "0.5" << std::endl;
         // Handle quit event and mouse click events
         mouseState = {false, false, false};
         keyboardState = {false, false, false};
@@ -237,14 +237,24 @@ int main() {
             }
         }
 
+        if(keyboardState.up == true) {
+            std::cout << "up" << std::endl;
+        }
+        //std::cout << "1" << std::endl;
+
         // Main menu
         if(player.gameState == 0) {
+            //std::cout << "1.5" << std::endl;
             if(!initialized) {
                 playSoundThread("welcome.wav");
                 initialized = true;
             }
+            //std::cout << "AAAA" << std::endl;
+            //std::cout << "AAAA" << menu.level << std::endl;
             if(menu.level = 0) {
+                std::cout << "b" << std::endl;
                 if (keyboardState.up) {
+                    std:: cout << "up" << std::endl;
                     menu.button = (menu.button - 1) % 3;
                     readButton(menu.button);
                 } else if (keyboardState.down) {
@@ -282,6 +292,7 @@ int main() {
 
         // Playing
         if(player.gameState == 1) {
+            std::cout << "wrong" << std::endl;
             // Player controls
             if(keys[SDL_SCANCODE_LSHIFT] || keys[SDL_SCANCODE_RSHIFT]) {
                 playerSpeed = 1;
@@ -345,6 +356,7 @@ int main() {
             double FPS = 1e9 / deltatime;
             std::cout << "FPS: " << FPS << std::endl;
         }
+        //std::cout << "suc" << std::endl;
     }
     SDL_Quit();
     return 0;
