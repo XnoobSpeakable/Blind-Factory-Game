@@ -331,6 +331,7 @@ int main() {
                 accumulateZ = 0;
             }
             
+            // TEMPORARY CHUNK GEN ALGORTHM, WILL BE IMPROVED LATER
             generateChunk(seed, seed, seed, getChunkX(player.x), getChunkZ(player.z));
             generateChunk(seed, seed, seed, getChunkX(player.x) + 1, getChunkZ(player.z));
             generateChunk(seed, seed, seed, getChunkX(player.x), getChunkZ(player.z) + 1);
