@@ -1,5 +1,3 @@
 /.vscode/
-/vendored/
-!/build/
 /build/**
 !/build/Release/
