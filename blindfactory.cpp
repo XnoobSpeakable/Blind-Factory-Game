@@ -3,11 +3,33 @@
 #include <thread>
 #include <string>
 #include <random>
+#include <fstream>
+#include <filesystem>
 #include "SimplexNoise.h"
 
 bool running = true;
 std::string cachedPath = SDL_GetBasePath();
 std::mt19937 rng;
+std::string worldsPath = cachedPath + "worlds/";
+int8_t worlds[6] = {0};
+int8_t worldCount = 0;
+int32_t seed;
+
+struct {
+    int64_t z;
+    int64_t x;
+    struct {} inventory;
+    int8_t gameState;
+} player;
+
+void checkForWorlds() {
+    for (int i = 1; i <= 5; i++) {
+        if (std::filesystem::exists(worldsPath + "world" + std::to_string(i))) {
+            worlds[i] = 1;
+            worldCount++;
+        }
+    }
+}
 
 SDL_AppResult playSound (std::string path) {
     static SDL_AudioStream *stream = NULL;
@@ -41,7 +63,6 @@ SDL_AppResult playSound (std::string path) {
 
 void generateChunk(uint32_t heightmapSeed, uint32_t blockSeed, uint32_t biomeSeed, uint32_t chunkX, uint32_t chunkZ) {
 
-    std::string path = cachedPath + "worlds/" + path;
     for (float x = chunkX * 16; x < chunkX * 16 + 16; x++) {
         for (float z = chunkZ * 16; z < chunkZ * 16 + 16; z++) {
             float noiseValue = SimplexNoise(heightmapSeed, 0.01).fractal(6, x, z);
@@ -65,12 +86,18 @@ int64_t getChunkZ(int64_t z) {
     return z / 16;
 }
 
-void generateWorld() {
-    player.seed = rng();
+void generateWorld(int8_t world) {
+    std::string worldPath = worldsPath + "world" + std::to_string(world) + ".bfwf";
+    std::fstream worldFile;
+    std::string magicString = "bfwf";
+    seed = rng();
+    worldFile.open (worldPath, std::ios::in | std::ios::out | std::ios::binary);
+    worldFile.write((char*)&magicString, magicString.length());
+    worldFile.write((char*)&seed, sizeof(seed));
     player.gameState = 1;
 }
 
-void loadWorld(int world) {
+void loadWorld(int8_t world) {
     // not implemented yet
 }
 
@@ -106,14 +133,6 @@ void readWorld(int8_t world) {
     }
 }
 
-struct {
-    int64_t z;
-    int64_t x;
-    struct {} inventory;
-    int8_t gameState;
-    int32_t seed;
-} player;
-
 int main() {
     // Constants:
     double targetFPS = 180.0;
@@ -140,8 +159,8 @@ int main() {
     const bool* keys = SDL_GetKeyboardState(nullptr);
     
     // Background music
-    std::thread audioThread(playMusic);
-    audioThread.detach();
+    //std::thread audioThread(playMusic);
+    //audioThread.detach();
     
     int16_t accumulateX = 0;
     int16_t accumulateZ = 0;
@@ -174,7 +193,7 @@ int main() {
     menu = {0, 0, 0};
     bool initialized = false;
 
-    int8_t worlds[6] = {0};
+    checkForWorlds();
 
     // Game loop
     while(running) {
@@ -233,20 +252,20 @@ int main() {
                     readButton(menu.button);
                 }
                 if (keyboardState.enter) {
+                    
                     if(menu.button == 0) {
                         menu.level = 1;
                         playSoundThread("select_world.wav");
                         if (keyboardState.up) {
-                            menu.world = (menu.world - 1) % 2;
-                            readWorld(menu.world);
-                            if (keyboardState.enter) {
-                                generateWorld();
-                            }
+                            menu.world = (menu.world - 1) % (worldCount + 1);
                         } else if (keyboardState.down) {
-                            menu.world = (menu.world + 1) % 2;
-                            readWorld(menu.world);
-                            if (keyboardState.enter) {
-                                loadWorld(1);
+                            menu.world = (menu.world + 1) % (worldCount + 1);
+                        }
+                        if (keyboardState.enter) {
+                            if(menu.world == 0) {
+                                generateWorld(menu.world);
+                            } else {
+                                loadWorld(menu.world);
                             }
                         }
 
@@ -303,15 +322,15 @@ int main() {
                 accumulateZ = 0;
             }
             
-            generateChunk(player.seed, player.seed, player.seed, getChunkX(player.x), getChunkZ(player.z));
-            generateChunk(player.seed, player.seed, player.seed, getChunkX(player.x) + 1, getChunkZ(player.z));
-            generateChunk(player.seed, player.seed, player.seed, getChunkX(player.x), getChunkZ(player.z) + 1);
-            generateChunk(player.seed, player.seed, player.seed, getChunkX(player.x) + 1, getChunkZ(player.z) + 1);
-            generateChunk(player.seed, player.seed, player.seed, getChunkX(player.x) - 1, getChunkZ(player.z));
-            generateChunk(player.seed, player.seed, player.seed, getChunkX(player.x) - 1, getChunkZ(player.z) - 1);
-            generateChunk(player.seed, player.seed, player.seed, getChunkX(player.x), getChunkZ(player.z) - 1);
-            generateChunk(player.seed, player.seed, player.seed, getChunkX(player.x) + 1, getChunkZ(player.z) - 1);
-            generateChunk(player.seed, player.seed, player.seed, getChunkX(player.x) - 1, getChunkZ(player.z) + 1);
+            generateChunk(seed, seed, seed, getChunkX(player.x), getChunkZ(player.z));
+            generateChunk(seed, seed, seed, getChunkX(player.x) + 1, getChunkZ(player.z));
+            generateChunk(seed, seed, seed, getChunkX(player.x), getChunkZ(player.z) + 1);
+            generateChunk(seed, seed, seed, getChunkX(player.x) + 1, getChunkZ(player.z) + 1);
+            generateChunk(seed, seed, seed, getChunkX(player.x) - 1, getChunkZ(player.z));
+            generateChunk(seed, seed, seed, getChunkX(player.x) - 1, getChunkZ(player.z) - 1);
+            generateChunk(seed, seed, seed, getChunkX(player.x), getChunkZ(player.z) - 1);
+            generateChunk(seed, seed, seed, getChunkX(player.x) + 1, getChunkZ(player.z) - 1);
+            generateChunk(seed, seed, seed, getChunkX(player.x) - 1, getChunkZ(player.z) + 1);
         }
         
         // FPS stuff
