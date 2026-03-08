@@ -270,11 +270,11 @@ int main() {
                     initWorldSelect = true;
                 }
                 if (keyboardState.up) {
-                    menu.world = (menu.world - 1) % (worldCount + 1);
+                    menu.world = menu.world - 1;
                     readWorld(menu.world);
                     std::cout << std::to_string(menu.world) << "g" << std::endl;
                 } else if (keyboardState.down) {
-                    menu.world = (menu.world + 1) % (worldCount + 1);
+                    menu.world = menu.world + 1;
                     readWorld(menu.world);
                     std::cout << std::to_string(menu.world) << "h" << std::endl;
                 }
