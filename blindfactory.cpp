@@ -76,9 +76,9 @@ int main() {
     int16_t accumulateZ = 0;
     int16_t playerSpeed = 1; // How many ms it takes to move one block
 
-    for (int x = 0; x < 100; x++) {
-        for (int z = 0; z < 100; z++) {
-            float noiseValue = SimplexNoise(0).fractal(0, x * 0.1f, z * 0.1f);
+    for (float x = 0; x < 200; x++) {
+        for (float z = 0; z < 200; z++) {
+            float noiseValue = SimplexNoise(234, 0.01).fractal(6, x, z);
             if (noiseValue > 0) {
                 std::cout << "#";
             } else {
