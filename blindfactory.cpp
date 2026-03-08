@@ -9,13 +9,18 @@
 #include "SimplexNoise.h"
 
 bool running = true;
+// File path stuff
 std::string cachedPath = SDL_GetBasePath();
 std::string worldsPath = cachedPath + "worlds/";
 std::string soundsPath = cachedPath + "assets/audio/";
+// World gen stuff
 std::mt19937 rng;
 int8_t worlds[6] = {0};
 int8_t worldCount = 5;
 int32_t seed;
+// Audio engine init
+bool audiosuccess = MIX_Init();
+MIX_Mixer* mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL);
 
 struct {
     int64_t z;
@@ -33,7 +38,12 @@ void checkForWorlds() {
 }
 
 void playSound (std::string path) {
-    //gutted
+    auto soundTrack = MIX_CreateTrack(mixer);
+    path = soundsPath + path;
+    std::cout << path << std::endl;
+    auto sound = MIX_LoadAudio(mixer,path.c_str(),false);
+    MIX_SetTrackAudio(soundTrack, sound);
+    MIX_PlayTrack(soundTrack, NULL);
 }
 
 void generateChunk(uint32_t heightmapSeed, uint32_t blockSeed, uint32_t biomeSeed, uint32_t chunkX, uint32_t chunkZ) {
@@ -76,31 +86,22 @@ void loadWorld(int8_t world) {
     // not implemented yet
 }
 
-void playMusic () {
-    //gutted
-}
-
-void playSoundThread(std::string path) {
-    std::thread audioThread(playSound, path);
-    audioThread.detach();
-}
-
 void readButton(int8_t button) {
     if(button == 0) {
-        playSoundThread("play.wav");
+        playSound("play.opus");
     } else if (button == 1) {
-        playSoundThread("options.wav");
+        playSound("options.opus");
     } else if (button == 2) {
-        playSoundThread("quit_game.wav");
+        playSound("quit_game.opus");
     }
 }
 
 void readWorld(int8_t world) {
     if(world == 0) {
-        playSoundThread("create_world.wav");
+        playSound("create_world.opus");
     } else {
-        playSoundThread("world.wav");
-        playSoundThread(std::to_string(world) + ".wav");
+        playSound("world.opus");
+        playSound(std::to_string(world) + ".opus");
     }
 }
 
@@ -126,22 +127,17 @@ int main() {
     SDL_BlitSurface(surface, nullptr, SDL_GetWindowSurface(window), nullptr);
     SDL_UpdateWindowSurface(window);
 
-    // Initialize audio
-    MIX_Init();
-    MIX_Mixer* mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL);
-    auto musicTrack = MIX_CreateTrack(mixer);
-    auto path = soundsPath + "hikaru_miles.wav";
-    auto music = MIX_LoadAudio(mixer,path.c_str(),false);
-    MIX_SetTrackAudio(musicTrack, music);
-    MIX_PlayTrack(musicTrack, NULL);
-
+    if(!audiosuccess) {
+        std::cout << "Audio engine failed to initialize!" << std::endl;
+    }
+    std::cout << "Audio engine initialized successfully!" << std::endl;
+    // Background music
+    playSound("hikaru_miles.opus");
+    std::cout << "Playing background music!" << std::endl;
+    
     // Initialize events and keyboard state
     SDL_Event event;
     const bool* keys = SDL_GetKeyboardState(nullptr);
-    
-    // Background music
-    std::thread audioThread(playMusic);
-    audioThread.detach();
     
     int16_t accumulateX = 0;
     int16_t accumulateZ = 0;
@@ -221,7 +217,7 @@ int main() {
         // Main menu
         if(player.gameState == 0) {
             if(!initialized && !skipWelcome) {
-                playSoundThread("welcome.wav");
+                playSound("welcome.opus");
                 initialized = true;
             }
             if(menu.level == 0) {
@@ -246,7 +242,7 @@ int main() {
             }
             if(menu.level == 1) {
                 if (!initWorldSelect) {
-                    playSoundThread("select_world.wav");
+                    playSound("select_world.opus");
                     initWorldSelect = true;
                 }
                 if (keyboardState.up) {
