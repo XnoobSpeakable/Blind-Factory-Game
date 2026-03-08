@@ -59,8 +59,8 @@ SDL_AppResult playMusic () {
     SDL_AppResult result = SDL_APP_CONTINUE;
     while(result == SDL_APP_CONTINUE) {
         result = playSound("hikaru_miles.wav");
+        SDL_Delay(180000);
     }
-    SDL_Delay(180000);
     return SDL_APP_CONTINUE;
 }
 
