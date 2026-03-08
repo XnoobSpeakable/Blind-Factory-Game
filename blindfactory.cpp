@@ -12,7 +12,7 @@ std::string cachedPath = SDL_GetBasePath();
 std::mt19937 rng;
 std::string worldsPath = cachedPath + "worlds/";
 int8_t worlds[6] = {0};
-int8_t worldCount = 0;
+int8_t worldCount = 5;
 int32_t seed;
 
 struct {
@@ -26,7 +26,6 @@ void checkForWorlds() {
     for (int i = 1; i <= 5; i++) {
         if (std::filesystem::exists(worldsPath + "world" + std::to_string(i))) {
             worlds[i] = 1;
-            worldCount++;
         }
     }
 }
@@ -67,15 +66,15 @@ void generateChunk(uint32_t heightmapSeed, uint32_t blockSeed, uint32_t biomeSee
         for (float z = chunkZ * 16; z < chunkZ * 16 + 16; z++) {
             float noiseValue = SimplexNoise(heightmapSeed, 0.01).fractal(6, x, z);
             if (noiseValue > 0.5) {
-                std::cout << "M";
+                //std::cout << "M";
             } else if (noiseValue < -0.5) {
-                std::cout << ".";
+                //std::cout << ".";
             }
             else {
-                std::cout << "X";
+                //std::cout << "X";
             }
         }
-        std::cout << std::endl;
+        //std::cout << std::endl;
     }
 }
 
@@ -128,18 +127,20 @@ void readButton(int8_t button) {
 void readWorld(int8_t world) {
     if(world == 0) {
         playSoundThread("create_world.wav");
-    } else if (world == 1) {
+    } else {
         playSoundThread("world.wav");
+        playSoundThread(std::to_string(world) + ".wav");
     }
 }
 
 int main() {
-    // Constants:
+    // DEVELOPER FLAGS
     double targetFPS = 180.0;
     double targetFrameTime = 1e9 / targetFPS;
     bool limitFPS = true;
     bool calculateFPS = false;
     bool debugWindow = true;
+    bool skipWelcome = true;
 
     // Initialize Window
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
@@ -191,15 +192,15 @@ int main() {
         int8_t world;
     } menu;
     menu = {0, 0, 0};
-    bool initialized = false;
-    std::cout << menu.level << std::endl;
+    bool initialized = false; //init welcoming
+    bool initWorldSelect = false; //init world select
+
     checkForWorlds();
-    //std::cout << "0" << std::endl;
+
     // Game loop
     while(running) {
         // Set up deltaTime
         Uint64 pretime = SDL_GetTicksNS();
-        //std::cout << "0.5" << std::endl;
         // Handle quit event and mouse click events
         mouseState = {false, false, false};
         keyboardState = {false, false, false};
@@ -237,24 +238,14 @@ int main() {
             }
         }
 
-        if(keyboardState.up == true) {
-            std::cout << "up" << std::endl;
-        }
-        //std::cout << "1" << std::endl;
-
         // Main menu
         if(player.gameState == 0) {
-            //std::cout << "1.5" << std::endl;
-            if(!initialized) {
+            if(!initialized && !skipWelcome) {
                 playSoundThread("welcome.wav");
                 initialized = true;
             }
-            //std::cout << "AAAA" << std::endl;
-            //std::cout << "AAAA" << menu.level << std::endl;
-            if(menu.level = 0) {
-                std::cout << "b" << std::endl;
+            if(menu.level == 0) {
                 if (keyboardState.up) {
-                    std:: cout << "up" << std::endl;
                     menu.button = (menu.button - 1) % 3;
                     readButton(menu.button);
                 } else if (keyboardState.down) {
@@ -262,23 +253,9 @@ int main() {
                     readButton(menu.button);
                 }
                 if (keyboardState.enter) {
-                    
                     if(menu.button == 0) {
                         menu.level = 1;
-                        playSoundThread("select_world.wav");
-                        if (keyboardState.up) {
-                            menu.world = (menu.world - 1) % (worldCount + 1);
-                        } else if (keyboardState.down) {
-                            menu.world = (menu.world + 1) % (worldCount + 1);
-                        }
-                        if (keyboardState.enter) {
-                            if(menu.world == 0) {
-                                generateWorld(menu.world);
-                            } else {
-                                loadWorld(menu.world);
-                            }
-                        }
-
+                        keyboardState.enter = false;
                     } else if (menu.button == 1) {
                         //menu.level = 1;
                         // options not implemented
@@ -287,12 +264,33 @@ int main() {
                     }
                 }
             }
+            if(menu.level == 1) {
+                if (!initWorldSelect) {
+                    playSoundThread("select_world.wav");
+                    initWorldSelect = true;
+                }
+                if (keyboardState.up) {
+                    menu.world = (menu.world - 1) % (worldCount + 1);
+                    readWorld(menu.world);
+                    std::cout << std::to_string(menu.world) << "g" << std::endl;
+                } else if (keyboardState.down) {
+                    menu.world = (menu.world + 1) % (worldCount + 1);
+                    readWorld(menu.world);
+                    std::cout << std::to_string(menu.world) << "h" << std::endl;
+                }
+                if (keyboardState.enter) {
+                    if(menu.world == 0) {
+                        generateWorld(menu.world);
+                    } else {
+                        loadWorld(menu.world);
+                    }
+                }
+            }
             
         }
 
         // Playing
         if(player.gameState == 1) {
-            std::cout << "wrong" << std::endl;
             // Player controls
             if(keys[SDL_SCANCODE_LSHIFT] || keys[SDL_SCANCODE_RSHIFT]) {
                 playerSpeed = 1;
@@ -356,7 +354,6 @@ int main() {
             double FPS = 1e9 / deltatime;
             std::cout << "FPS: " << FPS << std::endl;
         }
-        //std::cout << "suc" << std::endl;
     }
     SDL_Quit();
     return 0;
