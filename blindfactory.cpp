@@ -1,4 +1,5 @@
 #include <SDL3/SDL.h>
+#include <SDL3_mixer/SDL_mixer.h>
 #include <iostream>
 #include <thread>
 #include <string>
@@ -9,8 +10,9 @@
 
 bool running = true;
 std::string cachedPath = SDL_GetBasePath();
-std::mt19937 rng;
 std::string worldsPath = cachedPath + "worlds/";
+std::string soundsPath = cachedPath + "assets/audio/";
+std::mt19937 rng;
 int8_t worlds[6] = {0};
 int8_t worldCount = 5;
 int32_t seed;
@@ -30,34 +32,8 @@ void checkForWorlds() {
     }
 }
 
-SDL_AppResult playSound (std::string path) {
-    static SDL_AudioStream *stream = NULL;
-    static Uint8 *wav_data = NULL;
-    static Uint32 wav_data_len = 0;
-    SDL_AudioSpec spec;
-    path = cachedPath + "assets/audio/" + path;
-
-    if (!SDL_LoadWAV(path.c_str(), &spec, &wav_data, &wav_data_len)) {
-        SDL_Log("Couldn't load .wav file: %s", SDL_GetError());
-        return SDL_APP_FAILURE;
-    }
-    
-
-    stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, NULL, NULL);
-    if (!stream) {
-        SDL_Log("Couldn't create audio stream: %s", SDL_GetError());
-        return SDL_APP_FAILURE;
-    }
-
-    SDL_ResumeAudioStreamDevice(stream);
-
-
-    SDL_PutAudioStreamData(stream, wav_data, wav_data_len);
-    SDL_FlushAudioStream(stream);
-
-
-    SDL_free(wav_data);
-    return SDL_APP_CONTINUE;
+void playSound (std::string path) {
+    //gutted
 }
 
 void generateChunk(uint32_t heightmapSeed, uint32_t blockSeed, uint32_t biomeSeed, uint32_t chunkX, uint32_t chunkZ) {
@@ -100,13 +76,8 @@ void loadWorld(int8_t world) {
     // not implemented yet
 }
 
-SDL_AppResult playMusic () {
-    SDL_AppResult result = SDL_APP_CONTINUE;
-    while(result == SDL_APP_CONTINUE) {
-        result = playSound("hikaru_miles.wav");
-        SDL_Delay(180000);
-    }
-    return SDL_APP_CONTINUE;
+void playMusic () {
+    //gutted
 }
 
 void playSoundThread(std::string path) {
@@ -155,13 +126,22 @@ int main() {
     SDL_BlitSurface(surface, nullptr, SDL_GetWindowSurface(window), nullptr);
     SDL_UpdateWindowSurface(window);
 
+    // Initialize audio
+    MIX_Init();
+    MIX_Mixer* mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL);
+    auto musicTrack = MIX_CreateTrack(mixer);
+    auto path = soundsPath + "hikaru_miles.wav";
+    auto music = MIX_LoadAudio(mixer,path.c_str(),false);
+    MIX_SetTrackAudio(musicTrack, music);
+    MIX_PlayTrack(musicTrack, NULL);
+
     // Initialize events and keyboard state
     SDL_Event event;
     const bool* keys = SDL_GetKeyboardState(nullptr);
     
     // Background music
-    //std::thread audioThread(playMusic);
-    //audioThread.detach();
+    std::thread audioThread(playMusic);
+    audioThread.detach();
     
     int16_t accumulateX = 0;
     int16_t accumulateZ = 0;
