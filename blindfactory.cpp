@@ -22,12 +22,12 @@ int32_t seed;
 bool audiosuccess = MIX_Init();
 MIX_Mixer* mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL);
 
-struct {
+struct Player {
     int64_t z;
     int64_t x;
-    struct {} inventory;
     int8_t gameState;
-} player;
+};
+Player player;
 
 void checkForWorlds() {
     for (int i = 1; i <= 5; i++) {
@@ -144,16 +144,18 @@ int main() {
     int16_t playerSpeed = 1; // How many ms it takes to move one block
 
     // Initialize controls
-    struct {
+    struct MouseState{
         bool left;
         bool right;
         bool middle;
-    } mouseState;
-    struct {
+    };
+    MouseState mouseState;
+    struct KeyboardState {
         bool up;
         bool down;
         bool enter;
-    } keyboardState;
+    };
+    KeyboardState keyboardState;
 
     // Initalize player
     player.x = 0;
@@ -162,11 +164,12 @@ int main() {
     //gameState 0 = main menu; 1 = playing; 2 = paused;
 
     // Initalize menu
-    struct {
+    struct Menu {
         int8_t button;
         int8_t level;
         int8_t world;
-    } menu;
+    };
+    Menu menu;
     menu = {0, 0, 0};
     bool initialized = false; //init welcoming
     bool initWorldSelect = false; //init world select
