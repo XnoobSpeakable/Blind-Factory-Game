@@ -15,7 +15,7 @@ std::string worldsPath = cachedPath + "worlds/";
 std::string soundsPath = cachedPath + "assets/audio/";
 // World gen stuff
 std::mt19937 rng;
-int8_t worlds[6] = {0};
+bool worlds[6] = {0};
 int8_t worldCount = 5;
 int32_t seed;
 // Audio engine init
