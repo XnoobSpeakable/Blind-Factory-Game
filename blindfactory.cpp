@@ -113,6 +113,7 @@ int main() {
     bool calculateFPS = false;
     bool debugWindow = true;
     bool skipWelcome = true;
+    
 
     // Initialize Window
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
@@ -133,7 +134,6 @@ int main() {
     std::cout << "Audio engine initialized successfully!" << std::endl;
     // Background music
     playSound("hikaru_miles.opus");
-    std::cout << "Playing background music!" << std::endl;
     
     // Initialize events and keyboard state
     SDL_Event event;
