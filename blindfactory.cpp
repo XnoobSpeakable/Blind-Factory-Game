@@ -1,13 +1,32 @@
+// SDL stuff
 #include <SDL3/SDL.h>
 #include <SDL3_mixer/SDL_mixer.h>
+
+// Regular C++ stuff
 #include <iostream>
 #include <thread>
 #include <string>
 #include <random>
 #include <fstream>
 #include <filesystem>
+#include <bit>
+#include <array>
+
+// Simplex noise/worldgen library
 #include "SimplexNoise.h"
 
+// Serialization stuff
+#include <bitsery/bitsery.h>
+#include <bitsery/adapter/buffer.h>
+#include <bitsery/traits/vector.h>
+#include <bitsery/traits/string.h>
+
+// Serialization stuff
+using Buffer = std::vector<uint8_t>;
+using OutputAdapter = bitsery::OutputBufferAdapter<Buffer>;
+using InputAdapter = bitsery::InputBufferAdapter<Buffer>;
+
+// Game state
 bool running = true;
 // File path stuff
 std::string cachedPath = SDL_GetBasePath();
@@ -352,4 +371,8 @@ int main() {
     }
     SDL_Quit();
     return 0;
+}
+
+std::array<std::uint8_t, 4> u32_to_be_bytes(std::uint32_t v) {
+    return {static_cast<std::uint8_t>(v >> 24), static_cast<std::uint8_t>(v >> 16), static_cast<std::uint8_t>(v >> 8), static_cast<std::uint8_t>(v)};
 }
