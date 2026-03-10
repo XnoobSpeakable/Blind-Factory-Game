@@ -36,7 +36,7 @@ std::string soundsPath = cachedPath + "assets/audio/";
 
 // World gen stuff
 std::mt19937 rng;
-bool worlds[6] = {0};
+std::array<bool, 6> worlds = {0};
 int8_t worldCount = 5;
 int32_t seed;
 
@@ -50,6 +50,17 @@ struct Player {
     int8_t gameState;
 };
 Player player;
+
+class Block {
+    public:
+        std::string group;
+        std::string name;
+        uint16_t hardness;
+        bool hasData;
+};
+
+Block blocks[10];
+
 
 void checkForWorlds() {
     for (int i = 1; i <= 5; i++) {
