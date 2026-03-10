@@ -26,17 +26,20 @@ using Buffer = std::vector<uint8_t>;
 using OutputAdapter = bitsery::OutputBufferAdapter<Buffer>;
 using InputAdapter = bitsery::InputBufferAdapter<Buffer>;
 
-// Game state
+// Application running state
 bool running = true;
+
 // File path stuff
 std::string cachedPath = SDL_GetBasePath();
 std::string worldsPath = cachedPath + "worlds/";
 std::string soundsPath = cachedPath + "assets/audio/";
+
 // World gen stuff
 std::mt19937 rng;
 bool worlds[6] = {0};
 int8_t worldCount = 5;
 int32_t seed;
+
 // Audio engine init
 bool audiosuccess = MIX_Init();
 MIX_Mixer* mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL);
@@ -65,7 +68,6 @@ void playSound (std::string path) {
 }
 
 void generateChunk(uint32_t heightmapSeed, uint32_t blockSeed, uint32_t biomeSeed, uint32_t chunkX, uint32_t chunkZ) {
-
     for (float x = chunkX * 16; x < chunkX * 16 + 16; x++) {
         for (float z = chunkZ * 16; z < chunkZ * 16 + 16; z++) {
             float noiseValue = SimplexNoise(heightmapSeed, 0.01).fractal(6, x, z);
@@ -371,8 +373,4 @@ int main() {
     }
     SDL_Quit();
     return 0;
-}
-
-std::array<std::uint8_t, 4> u32_to_be_bytes(std::uint32_t v) {
-    return {static_cast<std::uint8_t>(v >> 24), static_cast<std::uint8_t>(v >> 16), static_cast<std::uint8_t>(v >> 8), static_cast<std::uint8_t>(v)};
 }
