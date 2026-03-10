@@ -32,7 +32,7 @@ Player player;
 void checkForWorlds() {
     for (int i = 1; i <= 5; i++) {
         if (std::filesystem::exists(worldsPath + "world" + std::to_string(i))) {
-            worlds[i] = 1;
+            worlds[i] = true;
         }
     }
 }
@@ -71,7 +71,18 @@ int64_t getChunkZ(int64_t z) {
     return z / 16;
 }
 
-void generateWorld(int8_t world) {
+void generateWorld() {
+    int8_t world = 0;
+    for(int i = 1; i <= worldCount; i++) {
+        if(!worlds[i]) {
+            world = i;
+            break;
+        }
+    }
+    if(world == 0) {
+        std::cout << "All world slots are full!" << std::endl;
+        return;
+    }
     std::string worldPath = worldsPath + "world" + std::to_string(world) + ".bfwf";
     std::fstream worldFile;
     std::string magicString = "bfwf";
@@ -251,15 +262,15 @@ int main() {
                 if (keyboardState.up) {
                     menu.world = menu.world - 1;
                     readWorld(menu.world);
-                    std::cout << std::to_string(menu.world) << "g" << std::endl;
+                    std::cout << std::to_string(menu.world) << "up" << std::endl;
                 } else if (keyboardState.down) {
                     menu.world = menu.world + 1;
                     readWorld(menu.world);
-                    std::cout << std::to_string(menu.world) << "h" << std::endl;
+                    std::cout << std::to_string(menu.world) << "down" << std::endl;
                 }
                 if (keyboardState.enter) {
                     if(menu.world == 0) {
-                        generateWorld(menu.world);
+                        generateWorld();
                     } else {
                         loadWorld(menu.world);
                     }
