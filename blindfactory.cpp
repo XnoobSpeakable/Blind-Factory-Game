@@ -42,7 +42,7 @@ void playSound (std::string path) {
     path = soundsPath + path;
     auto sound = MIX_LoadAudio(mixer,path.c_str(),false);
     MIX_SetTrackAudio(soundTrack, sound);
-    MIX_PlayTrack(soundTrack, NULL);
+    MIX_PlayTrack(soundTrack, 0);
 }
 
 void generateChunk(uint32_t heightmapSeed, uint32_t blockSeed, uint32_t biomeSeed, uint32_t chunkX, uint32_t chunkZ) {
@@ -82,13 +82,17 @@ void generateWorld() {
         std::cout << "All world slots are full!" << std::endl;
         return;
     }
-    std::string worldPath = worldsPath + "world" + std::to_string(world) + ".bfwf";
+    std::string worldPathString = worldsPath + "world" + std::to_string(world) + ".bfwf";
+    std::filesystem::path worldPath{worldPathString};
     std::fstream worldFile;
     std::string magicString = "bfwf";
     seed = rng();
-    worldFile.open (worldPath, std::ios::in | std::ios::out | std::ios::binary);
+    worldFile.open (worldPath, std::ios::in | std::ios::out | std::ios::binary | std::ios::app);
     worldFile.write((char*)&magicString, magicString.length());
     worldFile.write((char*)&seed, sizeof(seed));
+    worldFile.close();
+    std::cout << "Generated world " << std::to_string(world) << " with seed " << std::to_string(seed) << std::endl;
+    std::cout << "World file saved to " << worldPath << std::endl;
     player.gameState = 1;
 }
 
