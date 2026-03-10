@@ -40,7 +40,6 @@ void checkForWorlds() {
 void playSound (std::string path) {
     auto soundTrack = MIX_CreateTrack(mixer);
     path = soundsPath + path;
-    std::cout << path << std::endl;
     auto sound = MIX_LoadAudio(mixer,path.c_str(),false);
     MIX_SetTrackAudio(soundTrack, sound);
     MIX_PlayTrack(soundTrack, NULL);
