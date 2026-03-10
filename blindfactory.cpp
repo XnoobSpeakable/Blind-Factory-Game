@@ -1,5 +1,6 @@
 // SDL stuff
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_main.h>
 #include <SDL3_mixer/SDL_mixer.h>
 
 // Regular C++ stuff
@@ -16,15 +17,15 @@
 #include "SimplexNoise.h"
 
 // Serialization stuff
-#include <bitsery/bitsery.h>
-#include <bitsery/adapter/buffer.h>
-#include <bitsery/traits/vector.h>
-#include <bitsery/traits/string.h>
+// #include <bitsery/bitsery.h>
+// #include <bitsery/adapter/buffer.h>
+// #include <bitsery/traits/vector.h>
+// #include <bitsery/traits/string.h>
 
 // Serialization stuff
 using Buffer = std::vector<uint8_t>;
-using OutputAdapter = bitsery::OutputBufferAdapter<Buffer>;
-using InputAdapter = bitsery::InputBufferAdapter<Buffer>;
+// using OutputAdapter = bitsery::OutputBufferAdapter<Buffer>;
+// using InputAdapter = bitsery::InputBufferAdapter<Buffer>;
 
 // Application running state
 bool running = true;
@@ -151,7 +152,7 @@ void readWorld(int8_t world) {
     }
 }
 
-int main() {
+int main(int argc, char *argv[]) {
     // DEVELOPER FLAGS
     double targetFPS = 180.0;
     double targetFrameTime = 1e9 / targetFPS;

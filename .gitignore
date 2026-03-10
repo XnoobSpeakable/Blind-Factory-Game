@@ -1,3 +1,5 @@
 /.vscode/
 /build/**
 !/build/Release/
+vc140.pdb
+vendored/SDL
