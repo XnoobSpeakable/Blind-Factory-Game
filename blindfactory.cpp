@@ -12,6 +12,7 @@
 #include <filesystem>
 #include <bit>
 #include <array>
+#include <limits>
 
 // Simplex noise/worldgen library
 #include "SimplexNoise.h"
@@ -35,8 +36,15 @@ std::string cachedPath = SDL_GetBasePath();
 std::string worldsPath = cachedPath + "worlds/";
 std::string soundsPath = cachedPath + "assets/audio/";
 
+// Rng stuff
+std::random_device rd;
+std::mt19937 eng(rd());
+std::uniform_int_distribution<> distr(INT32_MIN, INT32_MAX);
+int32_t rn() {
+    return distr(eng);
+} 
+
 // World gen stuff
-std::mt19937 rng;
 std::array<bool, 6> worlds = {0};
 int8_t worldCount = 5;
 int32_t seed;
@@ -90,26 +98,26 @@ class Block {
         }
 };
 
-std::array blocks{
-    Block("unobtainables", "air", 0, false, false, false),
+auto blocks{std::to_array<Block>({
+    {"unobtainables", "air", 0, false, false, false},
 
-    Block("liquids", "warm_water", 0, false, false, false),
-    Block("liquids", "cold_water", 0, false, false, false),
-    Block("liquids", "lava", 0, false, false, false),
-    Block("liquids", "magma", 0, false, false, false),
-    Block("liquids", "crude_oil", 0, false, false, false),
+    {"liquids", "warm_water", 0, false, false, false},
+    {"liquids", "cold_water", 0, false, false, false},
+    {"liquids", "lava", 0, false, false, false},
+    {"liquids", "magma", 0, false, false, false},
+    {"liquids", "crude_oil", 0, false, false, false},
 
-    Block("stones", "granite", 120, false, true, false),
-    Block("stones", "chalk", 60, false, true, false),
-    Block("stones", "claystone", 80, false, true, false),
-    Block("stones", "basalt", 200, false, true, false),
-    Block("stones", "sandstone", 90, false, true, false),
-    Block("stones", "limestone", 100, false, true, false),
-    Block("stones", "mudstone", 70, false, true, false),
-    Block("stones", "shale", 110, false, true, false),
-    Block("stones", "gneiss", 180, false, true, false),
-    Block("stones", "diorite", 130, false, true, false)
-};
+    {"stones", "granite", 120, false, true, false},
+    {"stones", "chalk", 60, false, true, false},
+    {"stones", "claystone", 80, false, true, false},
+    {"stones", "basalt", 200, false, true, false},
+    {"stones", "sandstone", 90, false, true, false},
+    {"stones", "limestone", 100, false, true, false},
+    {"stones", "mudstone", 70, false, true, false},
+    {"stones", "shale", 110, false, true, false},
+    {"stones", "gneiss", 180, false, true, false},
+    {"stones", "diorite", 130, false, true, false}
+})};
 
 Block getBlock(uint16_t id) {
     if(id >= blocks.size()) {
@@ -132,6 +140,23 @@ void playSound (std::string path) {
     auto sound = MIX_LoadAudio(mixer,path.c_str(),false);
     MIX_SetTrackAudio(soundTrack, sound);
     MIX_PlayTrack(soundTrack, 0);
+}
+
+void debugWorldGen(uint32_t heightSeed, uint32_t temperatureSeed, uint32_t qualitySeed) {
+    for (float x = 0; x < 85; x++) {
+        for (float z = 0; z < 350; z++) {
+            float noiseValue = SimplexNoise(heightSeed, 0.01).fractal(6, x, z);
+            if (noiseValue > 0.5) {
+                std::cout << "M";
+            } else if (noiseValue < -0.5) {
+                std::cout << ".";
+            }
+            else {
+                std::cout << "X";
+            }
+        }
+        std::cout << std::endl;
+    }
 }
 
 void generateChunk(uint32_t heightSeed, uint32_t temperatureSeed, uint32_t qualitySeed, uint32_t chunkX, uint32_t chunkZ) {
@@ -174,7 +199,7 @@ void generateWorld() {
     std::filesystem::path worldPath{worldPathString};
     std::fstream worldFile;
     std::string magicString = "bfwf";
-    seed = rng();
+    seed = rn();
     worldFile.open (worldPath, std::ios::in | std::ios::out | std::ios::binary | std::ios::app);
     worldFile.write((char*)&magicString, magicString.length());
     worldFile.write((char*)&seed, sizeof(seed));
@@ -279,7 +304,9 @@ int main(int argc, char *argv[]) {
 
     checkForWorlds();
 
-    std::cout << getBlock(0).getName() << std::endl;
+    std::cout << getBlock(0).getGroup() << std::endl;
+
+    debugWorldGen(rn(), rn(), rn());
 
     // Game loop
     while(running) {
