@@ -12,4 +12,4 @@ I only used Github Copilot free tier, never paid a cent.
 
 External chat applications like ChatGPT were not and never will be used.
 
-This disclaimer doesn't necessarily apply to other contributors to this porject, however, I do not think they use AI at all.
+This disclaimer doesn't necessarily apply to other contributors to this project, however, I do not think they use AI at all.
