@@ -251,6 +251,7 @@ void debugWorldGen(uint32_t heightSeed, uint32_t temperatureSeed, uint32_t quali
 
 std::array<uint16_t, 256> generateChunk(uint32_t heightSeed, uint32_t temperatureSeed, uint32_t qualitySeed, uint32_t chunkX, uint32_t chunkZ) {
     uint8_t i = 0;
+    std::array<uint16_t, 256> chunk = {0};
 
     for (float x = chunkX * 16; x < chunkX * 16 + 16; x++) {
         for (float z = chunkZ * 16; z < chunkZ * 16 + 16; z++) {
@@ -262,13 +263,31 @@ std::array<uint16_t, 256> generateChunk(uint32_t heightSeed, uint32_t temperatur
             uint8_t height = std::floor((heightNoiseValue + 1) * 10);
             uint8_t temperature = std::floor((temperatureNoiseValue + 1) * 10);
 
-            
+            // Sorting by heat, inner if statements for height, and for quality
+            if (temperature > 19) {
+                
+            } else if (temperature > 15) {
+                if (height > 15) {
+                    
+                } else if (height < 5) {
+                    
+                } else {
+                    
+                }
+            } else if (temperature > 10) {
+                
+            } else if (temperature > 5) {
+                
+            } else if (temperature > 1) {
+                
+            } else {
+                
+            }
 
             i++;
         }
     }
-    // DOESNT ACTUALLY DO ANYTHING YET
-    std::array<uint16_t, 256> chunk = {0};
+
     return chunk;
 }
 
