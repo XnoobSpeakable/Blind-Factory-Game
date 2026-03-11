@@ -146,16 +146,17 @@ void debugWorldGen(uint32_t heightSeed, uint32_t temperatureSeed, uint32_t quali
     // block noise
     for (float x = 0; x < 85; x++) {
         for (float z = 0; z < 370; z++) {
-            float noiseValue = SimplexNoise(qualitySeed, 0.25, 1, 2).fractal(3, x, z);
-            if (noiseValue > 0.9) {
+            float hnoiseValue = SimplexNoise(qualitySeed, 0.25, 1, 2).fractal(3, x, z);
+            int8_t noiseValue = std::floor((hnoiseValue + 1) * 10);
+            if (noiseValue > 19) {
                 std::cout << "M";
-            } else if (noiseValue > 0.5) {
+            } else if (noiseValue > 15) {
                 std::cout << "X";
-            } else if (noiseValue > 0) {
+            } else if (noiseValue > 10) {
                 std::cout << "+";
-            } else if (noiseValue > -0.5) {
+            } else if (noiseValue > 5) {
                 std::cout << "-";
-            } else if (noiseValue > -0.9) {
+            } else if (noiseValue > 1) {
                 std::cout << ".";
             } else {
                 std::cout << " ";
@@ -168,10 +169,11 @@ void debugWorldGen(uint32_t heightSeed, uint32_t temperatureSeed, uint32_t quali
     // heightmap noise
     for (float x = 0; x < 85; x++) {
         for (float z = 0; z < 370; z++) {
-            float noiseValue = SimplexNoise(heightSeed, 0.01, 1, 2).fractal(6, x, z);
-            if (noiseValue > 0.5) {
+            float hnoiseValue = SimplexNoise(heightSeed, 0.01).fractal(6, x, z);
+            int8_t noiseValue = std::floor((hnoiseValue + 1) * 10);
+            if (noiseValue > 15) {
                 std::cout << "M";
-            } else if (noiseValue < -0.5) {
+            } else if (noiseValue < 5) {
                 std::cout << ".";
             }
             else {
@@ -185,10 +187,11 @@ void debugWorldGen(uint32_t heightSeed, uint32_t temperatureSeed, uint32_t quali
     // heightmap noise on four
     for (float x = 0; x < 85; x++) {
         for (float z = 0; z < 370; z++) {
-            float noiseValue = SimplexNoise(heightSeed, 0.01, 1, 2).fractal(6, x*4, z*4);
-            if (noiseValue > 0.5) {
+            float hnoiseValue = SimplexNoise(heightSeed, 0.01, 1, 2).fractal(6, x*4, z*4);
+            int8_t noiseValue = std::floor((hnoiseValue + 1) * 10);
+            if (noiseValue > 15) {
                 std::cout << "M";
-            } else if (noiseValue < -0.5) {
+            } else if (noiseValue < 5) {
                 std::cout << ".";
             }
             else {
@@ -202,16 +205,17 @@ void debugWorldGen(uint32_t heightSeed, uint32_t temperatureSeed, uint32_t quali
     // temperature noise
     for (float x = 0; x < 85; x++) {
         for (float z = 0; z < 370; z++) {
-            float noiseValue = SimplexNoise(temperatureSeed, 0.001, 1, 2, 0.4).fractal(5, x, z);
-            if (noiseValue > 0.9) {
+            float hnoiseValue = SimplexNoise(temperatureSeed, 0.001, 1, 2, 0.4).fractal(5, x, z);
+            int8_t noiseValue = std::floor((hnoiseValue + 1) * 10);
+            if (noiseValue > 19) {
                 std::cout << "M";
-            } else if (noiseValue > 0.5) {
+            } else if (noiseValue > 15) {
                 std::cout << "X";
-            } else if (noiseValue > 0) {
+            } else if (noiseValue > 10) {
                 std::cout << "+";
-            } else if (noiseValue > -0.5) {
+            } else if (noiseValue > 5) {
                 std::cout << "-";
-            } else if (noiseValue > -0.9) {
+            } else if (noiseValue > 1) {
                 std::cout << ".";
             } else {
                 std::cout << " ";
@@ -224,16 +228,17 @@ void debugWorldGen(uint32_t heightSeed, uint32_t temperatureSeed, uint32_t quali
     // temperature noise on 16
     for (float x = 0; x < 85; x++) {
         for (float z = 0; z < 370; z++) {
-            float noiseValue = SimplexNoise(temperatureSeed, 0.001, 1, 2, 0.4).fractal(5, x*16, z*16);
-            if (noiseValue > 0.9) {
+            float hnoiseValue = SimplexNoise(temperatureSeed, 0.001, 1, 2, 0.4).fractal(5, x*16, z*16);
+            int8_t noiseValue = std::floor((hnoiseValue + 1) * 10);
+            if (noiseValue > 19) {
                 std::cout << "M";
-            } else if (noiseValue > 0.5) {
+            } else if (noiseValue > 15) {
                 std::cout << "X";
-            } else if (noiseValue > 0) {
+            } else if (noiseValue > 10) {
                 std::cout << "+";
-            } else if (noiseValue > -0.5) {
+            } else if (noiseValue > 5) {
                 std::cout << "-";
-            } else if (noiseValue > -0.9) {
+            } else if (noiseValue > 1) {
                 std::cout << ".";
             } else {
                 std::cout << " ";
@@ -244,21 +249,27 @@ void debugWorldGen(uint32_t heightSeed, uint32_t temperatureSeed, uint32_t quali
     std::cout << std::endl;
 }
 
-void generateChunk(uint32_t heightSeed, uint32_t temperatureSeed, uint32_t qualitySeed, uint32_t chunkX, uint32_t chunkZ) {
+std::array<uint16_t, 256> generateChunk(uint32_t heightSeed, uint32_t temperatureSeed, uint32_t qualitySeed, uint32_t chunkX, uint32_t chunkZ) {
+    std::array<uint8_t, 256> quality;
+    std::array<uint8_t, 256> height;
+    std::array<uint8_t, 256> temperature;
+
+    uint8_t i = 0;
+
     for (float x = chunkX * 16; x < chunkX * 16 + 16; x++) {
         for (float z = chunkZ * 16; z < chunkZ * 16 + 16; z++) {
-            float noiseValue = SimplexNoise(heightSeed, 0.01).fractal(5, x, z);
-            if (noiseValue > 0.5) {
-                //std::cout << "M";
-            } else if (noiseValue < -0.5) {
-                //std::cout << ".";
-            }
-            else {
-                //std::cout << "X";
-            }
+            float qualityNoiseValue = SimplexNoise(qualitySeed, 0.25, 1, 2).fractal(3, x, z);
+            float heightNoiseValue = SimplexNoise(heightSeed, 0.01).fractal(6, x, z);
+            float temperatureNoiseValue = SimplexNoise(temperatureSeed, 0.001, 1, 2, 0.4).fractal(5, x, z);
+
+            quality[i] = std::floor((qualityNoiseValue + 1) * 10);
+            height[i] = std::floor((heightNoiseValue + 1) * 10);
+            temperature[i] = std::floor((temperatureNoiseValue + 1) * 10);
+            i++;
         }
-        //std::cout << std::endl;
     }
+    std::array<uint16_t, 256> chunk = {0};
+    return chunk;
 }
 
 int64_t getChunkX(int64_t x) {
@@ -527,16 +538,7 @@ int main(int argc, char *argv[]) {
                 accumulateZ = 0;
             }
             
-            // TEMPORARY CHUNK GEN ALGORTHM, WILL BE IMPROVED LATER
-            generateChunk(seed, seed, seed, getChunkX(player.x), getChunkZ(player.z));
-            generateChunk(seed, seed, seed, getChunkX(player.x) + 1, getChunkZ(player.z));
-            generateChunk(seed, seed, seed, getChunkX(player.x), getChunkZ(player.z) + 1);
-            generateChunk(seed, seed, seed, getChunkX(player.x) + 1, getChunkZ(player.z) + 1);
-            generateChunk(seed, seed, seed, getChunkX(player.x) - 1, getChunkZ(player.z));
-            generateChunk(seed, seed, seed, getChunkX(player.x) - 1, getChunkZ(player.z) - 1);
-            generateChunk(seed, seed, seed, getChunkX(player.x), getChunkZ(player.z) - 1);
-            generateChunk(seed, seed, seed, getChunkX(player.x) + 1, getChunkZ(player.z) - 1);
-            generateChunk(seed, seed, seed, getChunkX(player.x) - 1, getChunkZ(player.z) + 1);
+            std::array<uint16_t, 256> currentChunk = generateChunk(seed, seed, seed, getChunkX(player.x), getChunkZ(player.z));
         }
         
         // FPS stuff
