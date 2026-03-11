@@ -250,10 +250,6 @@ void debugWorldGen(uint32_t heightSeed, uint32_t temperatureSeed, uint32_t quali
 }
 
 std::array<uint16_t, 256> generateChunk(uint32_t heightSeed, uint32_t temperatureSeed, uint32_t qualitySeed, uint32_t chunkX, uint32_t chunkZ) {
-    std::array<uint8_t, 256> quality;
-    std::array<uint8_t, 256> height;
-    std::array<uint8_t, 256> temperature;
-
     uint8_t i = 0;
 
     for (float x = chunkX * 16; x < chunkX * 16 + 16; x++) {
@@ -262,12 +258,16 @@ std::array<uint16_t, 256> generateChunk(uint32_t heightSeed, uint32_t temperatur
             float heightNoiseValue = SimplexNoise(heightSeed, 0.01).fractal(6, x, z);
             float temperatureNoiseValue = SimplexNoise(temperatureSeed, 0.001, 1, 2, 0.4).fractal(5, x, z);
 
-            quality[i] = std::floor((qualityNoiseValue + 1) * 10);
-            height[i] = std::floor((heightNoiseValue + 1) * 10);
-            temperature[i] = std::floor((temperatureNoiseValue + 1) * 10);
+            uint8_t quality = std::floor((qualityNoiseValue + 1) * 10);
+            uint8_t height = std::floor((heightNoiseValue + 1) * 10);
+            uint8_t temperature = std::floor((temperatureNoiseValue + 1) * 10);
+
+            
+
             i++;
         }
     }
+    // DOESNT ACTUALLY DO ANYTHING YET
     std::array<uint16_t, 256> chunk = {0};
     return chunk;
 }
