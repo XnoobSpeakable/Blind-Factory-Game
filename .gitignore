@@ -1,5 +1,12 @@
 /.vscode/
-/build/**
-!/build/Release/
+/build/CMakeFiles/
+/build/vendored/
+/build/assetbackup/
+/build/*.cmake
+/build/*.txt
+/build/Makefile
+/build/Release/b*
+/build/Release/l*
+/build/Release/worlds
 vc140.pdb
 vendored/SDL

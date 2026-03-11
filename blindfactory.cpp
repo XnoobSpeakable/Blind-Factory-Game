@@ -23,7 +23,7 @@
 // #include <bitsery/traits/string.h>
 
 // Serialization stuff
-using Buffer = std::vector<uint8_t>;
+// using Buffer = std::vector<uint8_t>;
 // using OutputAdapter = bitsery::OutputBufferAdapter<Buffer>;
 // using InputAdapter = bitsery::InputBufferAdapter<Buffer>;
 
