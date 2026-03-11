@@ -52,16 +52,54 @@ struct Player {
 };
 Player player;
 
+// Initialize blocks
 class Block {
-    public:
+    private:
         std::string group;
         std::string name;
         uint16_t hardness;
+        bool interactable;
+        bool breakable;
         bool hasData;
+    public:
+        Block(std::string ingroup, std::string inname, uint16_t inhardness, bool ininteractable, bool inbreakable, bool inhasData) {
+            group = ingroup;
+            name = inname;
+            hardness = inhardness;
+            interactable = ininteractable;
+            breakable = inbreakable;
+            hasData = inhasData;
+        }
+        const std::string& getGroup() {
+            return group;
+        }
+        const std::string& getName() {
+            return name;
+        }
+        uint16_t getHardness() {
+            return hardness;
+        }
+        bool isInteractable() {
+            return interactable;
+        }
+        bool isBreakable() {
+            return breakable;
+        }
+        bool hasBlockData() {
+            return hasData;
+        }
 };
 
-Block blocks[10];
+Block air = Block("unobtainables", "air", 0, false, false, false);
+Block stone = Block("basics", "stone", 1, false, true, false);
+std::array<Block, 2> blocks = {air, stone};
 
+Block getBlock(uint16_t id) {
+    if(id >= blocks.size()) {
+        return Block("invalid", "invalid", 0, true, false, false);
+    }
+    return blocks[id];
+}
 
 void checkForWorlds() {
     for (int i = 1; i <= 5; i++) {
