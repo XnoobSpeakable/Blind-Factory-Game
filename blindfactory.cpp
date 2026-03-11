@@ -90,9 +90,26 @@ class Block {
         }
 };
 
-Block air = Block("unobtainables", "air", 0, false, false, false);
-Block stone = Block("basics", "stone", 1, false, true, false);
-std::array<Block, 2> blocks = {air, stone};
+std::array blocks{
+    Block("unobtainables", "air", 0, false, false, false),
+
+    Block("liquids", "warm_water", 0, false, false, false),
+    Block("liquids", "cold_water", 0, false, false, false),
+    Block("liquids", "lava", 0, false, false, false),
+    Block("liquids", "magma", 0, false, false, false),
+    Block("liquids", "crude_oil", 0, false, false, false),
+
+    Block("stones", "granite", 120, false, true, false),
+    Block("stones", "chalk", 60, false, true, false),
+    Block("stones", "claystone", 80, false, true, false),
+    Block("stones", "basalt", 200, false, true, false),
+    Block("stones", "sandstone", 90, false, true, false),
+    Block("stones", "limestone", 100, false, true, false),
+    Block("stones", "mudstone", 70, false, true, false),
+    Block("stones", "shale", 110, false, true, false),
+    Block("stones", "gneiss", 180, false, true, false),
+    Block("stones", "diorite", 130, false, true, false)
+};
 
 Block getBlock(uint16_t id) {
     if(id >= blocks.size()) {
@@ -117,10 +134,10 @@ void playSound (std::string path) {
     MIX_PlayTrack(soundTrack, 0);
 }
 
-void generateChunk(uint32_t heightmapSeed, uint32_t blockSeed, uint32_t biomeSeed, uint32_t chunkX, uint32_t chunkZ) {
+void generateChunk(uint32_t heightSeed, uint32_t temperatureSeed, uint32_t qualitySeed, uint32_t chunkX, uint32_t chunkZ) {
     for (float x = chunkX * 16; x < chunkX * 16 + 16; x++) {
         for (float z = chunkZ * 16; z < chunkZ * 16 + 16; z++) {
-            float noiseValue = SimplexNoise(heightmapSeed, 0.01).fractal(6, x, z);
+            float noiseValue = SimplexNoise(heightSeed, 0.01).fractal(6, x, z);
             if (noiseValue > 0.5) {
                 //std::cout << "M";
             } else if (noiseValue < -0.5) {
@@ -261,6 +278,8 @@ int main(int argc, char *argv[]) {
     bool initWorldSelect = false; //init world select
 
     checkForWorlds();
+
+    std::cout << getBlock(0).getName() << std::endl;
 
     // Game loop
     while(running) {
