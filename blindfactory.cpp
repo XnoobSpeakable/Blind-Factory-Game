@@ -98,25 +98,146 @@ class Block {
         }
 };
 
+
+
+// Block ID organization is by worldgen criteria
 auto blocks{std::to_array<Block>({
+    // Extremely cold biome
+    // Low elevation
+    /*
+    {"liquids/natural", "very_cold_water", 0, false, false, false},
+    {"solids/other", "deep_ice", 150, false, true, false},
+    {"solids/other", "ocean_ice", 120, false, true, false},
+    {"solids/other", "ice", 120, false, true, false},
+    {"solids/other", "pure_snow", 10, false, true, false},
+    */
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    // Medium elevation
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    // High elevation
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+
+    // Cold biome
+    //Low elevation
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    // Medium elevation
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    // High elevation
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+
+    // Temperate biome
+    //Low elevation
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    // Medium elevation
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    // High elevation
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+
+    // Hot biome
+    //Low elevation
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    // Medium elevation
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    // High elevation
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+
+    // Extremely hot biome
+    //Low elevation
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    // Medium elevation
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    // High elevation
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "reserved", 0, false, false, false},
+
+
     {"unobtainables", "air", 0, false, false, false},
 
-    {"liquids", "warm_water", 0, false, false, false},
-    {"liquids", "cold_water", 0, false, false, false},
-    {"liquids", "lava", 0, false, false, false},
-    {"liquids", "magma", 0, false, false, false},
-    {"liquids", "crude_oil", 0, false, false, false},
+    {"liquids/natural", "warm_water", 0, false, false, false},
+    {"liquids/natural", "cold_water", 0, false, false, false},
+    {"liquids/natural", "lava", 0, false, false, false},
+    {"liquids/natural", "magma", 0, false, false, false},
+    {"liquids/natural", "crude_oil", 0, false, false, false},
 
-    {"stones", "granite", 120, false, true, false},
-    {"stones", "chalk", 60, false, true, false},
-    {"stones", "claystone", 80, false, true, false},
-    {"stones", "basalt", 200, false, true, false},
-    {"stones", "sandstone", 90, false, true, false},
-    {"stones", "limestone", 100, false, true, false},
-    {"stones", "mudstone", 70, false, true, false},
-    {"stones", "shale", 110, false, true, false},
-    {"stones", "gneiss", 180, false, true, false},
-    {"stones", "diorite", 130, false, true, false}
+
+
+    {"solids/stones", "granite", 120, false, true, false},
+    {"solids/stones", "chalk", 60, false, true, false},
+    {"solids/stones", "claystone", 80, false, true, false},
+    {"solids/stones", "basalt", 200, false, true, false},
+    {"solids/stones", "sandstone", 90, false, true, false},
+    {"solids/stones", "limestone", 100, false, true, false},
+    {"solids/stones", "mudstone", 70, false, true, false},
+    {"solids/stones", "shale", 110, false, true, false},
+    {"solids/stones", "gneiss", 180, false, true, false},
+    {"solids/stones", "diorite", 130, false, true, false},
+    {"solids/stones", "gravel", 50, false, true, false},
+
+    {"solids/dirts", "dirt", 50, false, true, false},
+    {"solids/dirts", "wet_dirt", 50, false, true, false},
+    {"solids/dirts", "dry_dirt", 60, false, true, false},
+    {"solids/dirts", "beach_sand", 40, false, true, false},
+    {"solids/dirts", "desert_sand", 40, false, true, false},
+    {"solids/dirts", "clay", 40, false, true, false},
 })};
 
 Block getBlock(uint16_t id) {
@@ -146,17 +267,15 @@ void debugWorldGen(uint32_t heightSeed, uint32_t temperatureSeed, uint32_t quali
     // block noise
     for (float x = 0; x < 85; x++) {
         for (float z = 0; z < 370; z++) {
-            float hnoiseValue = SimplexNoise(qualitySeed, 0.25, 1, 2).fractal(3, x, z);
+            float hnoiseValue = SimplexNoise(temperatureSeed, 0.001, 1, 2, 0.4).fractal(5, x*16, z*16);
             int8_t noiseValue = std::floor((hnoiseValue + 1) * 10);
-            if (noiseValue > 19) {
+            if (noiseValue >= 18) {
                 std::cout << "M";
-            } else if (noiseValue > 15) {
+            } else if (noiseValue >= 13) {
                 std::cout << "X";
-            } else if (noiseValue > 10) {
+            } else if (noiseValue >= 7) {
                 std::cout << "+";
-            } else if (noiseValue > 5) {
-                std::cout << "-";
-            } else if (noiseValue > 1) {
+            } else if (noiseValue >= 2) {
                 std::cout << ".";
             } else {
                 std::cout << " ";
@@ -207,15 +326,13 @@ void debugWorldGen(uint32_t heightSeed, uint32_t temperatureSeed, uint32_t quali
         for (float z = 0; z < 370; z++) {
             float hnoiseValue = SimplexNoise(temperatureSeed, 0.001, 1, 2, 0.4).fractal(5, x, z);
             int8_t noiseValue = std::floor((hnoiseValue + 1) * 10);
-            if (noiseValue > 19) {
+            if (noiseValue >= 18) {
                 std::cout << "M";
-            } else if (noiseValue > 15) {
+            } else if (noiseValue >= 13) {
                 std::cout << "X";
-            } else if (noiseValue > 10) {
+            } else if (noiseValue >= 7) {
                 std::cout << "+";
-            } else if (noiseValue > 5) {
-                std::cout << "-";
-            } else if (noiseValue > 1) {
+            } else if (noiseValue >= 2) {
                 std::cout << ".";
             } else {
                 std::cout << " ";
@@ -226,19 +343,17 @@ void debugWorldGen(uint32_t heightSeed, uint32_t temperatureSeed, uint32_t quali
     std::cout << std::endl;
 
     // temperature noise on 16
-    for (float x = 0; x < 85; x++) {
+    for (float x = 0; x < 300; x++) {
         for (float z = 0; z < 370; z++) {
             float hnoiseValue = SimplexNoise(temperatureSeed, 0.001, 1, 2, 0.4).fractal(5, x*16, z*16);
             int8_t noiseValue = std::floor((hnoiseValue + 1) * 10);
-            if (noiseValue > 19) {
+            if (noiseValue >= 18) {
                 std::cout << "M";
-            } else if (noiseValue > 15) {
+            } else if (noiseValue >= 13) {
                 std::cout << "X";
-            } else if (noiseValue > 10) {
+            } else if (noiseValue >= 7) {
                 std::cout << "+";
-            } else if (noiseValue > 5) {
-                std::cout << "-";
-            } else if (noiseValue > 1) {
+            } else if (noiseValue >= 2) {
                 std::cout << ".";
             } else {
                 std::cout << " ";
@@ -263,26 +378,7 @@ std::array<uint16_t, 256> generateChunk(uint32_t heightSeed, uint32_t temperatur
             uint8_t height = std::floor((heightNoiseValue + 1) * 10);
             uint8_t temperature = std::floor((temperatureNoiseValue + 1) * 10);
 
-            // Sorting by heat, inner if statements for height, and for quality
-            if (temperature > 19) {
-                
-            } else if (temperature > 15) {
-                if (height > 15) {
-                    
-                } else if (height < 5) {
-                    
-                } else {
-                    
-                }
-            } else if (temperature > 10) {
-                
-            } else if (temperature > 5) {
-                
-            } else if (temperature > 1) {
-                
-            } else {
-                
-            }
+            
 
             i++;
         }
