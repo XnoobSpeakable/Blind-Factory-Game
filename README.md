@@ -1,0 +1,7 @@
+This is a game about building a factory in a 2D world while blind. Extremely work in progress right now.
+
+Disclaimer for use of AI:
+Github Copilot:
+Inline suggestions were used to speed up coding.
+The chat feature was used to bulk replace certain parts of code with AI, never to write new code.
+In general, I only used AI code that I understand and that I was going to write myself, rather than letting AI do all the work.
