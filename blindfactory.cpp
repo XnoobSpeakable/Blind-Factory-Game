@@ -143,26 +143,111 @@ void playSound (std::string path) {
 }
 
 void debugWorldGen(uint32_t heightSeed, uint32_t temperatureSeed, uint32_t qualitySeed) {
+    // block noise
     for (float x = 0; x < 85; x++) {
-        for (float z = 0; z < 350; z++) {
-            float noiseValue = SimplexNoise(heightSeed, 0.01).fractal(6, x, z);
+        for (float z = 0; z < 370; z++) {
+            float noiseValue = SimplexNoise(qualitySeed, 0.25, 1, 2).fractal(3, x, z);
+            if (noiseValue > 0.9) {
+                std::cout << "M";
+            } else if (noiseValue > 0.5) {
+                std::cout << "X";
+            } else if (noiseValue > 0) {
+                std::cout << "+";
+            } else if (noiseValue > -0.5) {
+                std::cout << "-";
+            } else if (noiseValue > -0.9) {
+                std::cout << ".";
+            } else {
+                std::cout << " ";
+            }
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+
+    // heightmap noise
+    for (float x = 0; x < 85; x++) {
+        for (float z = 0; z < 370; z++) {
+            float noiseValue = SimplexNoise(heightSeed, 0.01, 1, 2).fractal(6, x, z);
             if (noiseValue > 0.5) {
                 std::cout << "M";
             } else if (noiseValue < -0.5) {
                 std::cout << ".";
             }
             else {
-                std::cout << "X";
+                std::cout << "+";
             }
         }
         std::cout << std::endl;
     }
+    std::cout << std::endl;
+
+    // heightmap noise on four
+    for (float x = 0; x < 85; x++) {
+        for (float z = 0; z < 370; z++) {
+            float noiseValue = SimplexNoise(heightSeed, 0.01, 1, 2).fractal(6, x*4, z*4);
+            if (noiseValue > 0.5) {
+                std::cout << "M";
+            } else if (noiseValue < -0.5) {
+                std::cout << ".";
+            }
+            else {
+                std::cout << "+";
+            }
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+
+    // temperature noise
+    for (float x = 0; x < 85; x++) {
+        for (float z = 0; z < 370; z++) {
+            float noiseValue = SimplexNoise(temperatureSeed, 0.001, 1, 2, 0.4).fractal(5, x, z);
+            if (noiseValue > 0.9) {
+                std::cout << "M";
+            } else if (noiseValue > 0.5) {
+                std::cout << "X";
+            } else if (noiseValue > 0) {
+                std::cout << "+";
+            } else if (noiseValue > -0.5) {
+                std::cout << "-";
+            } else if (noiseValue > -0.9) {
+                std::cout << ".";
+            } else {
+                std::cout << " ";
+            }
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+
+    // temperature noise on 16
+    for (float x = 0; x < 85; x++) {
+        for (float z = 0; z < 370; z++) {
+            float noiseValue = SimplexNoise(temperatureSeed, 0.001, 1, 2, 0.4).fractal(5, x*16, z*16);
+            if (noiseValue > 0.9) {
+                std::cout << "M";
+            } else if (noiseValue > 0.5) {
+                std::cout << "X";
+            } else if (noiseValue > 0) {
+                std::cout << "+";
+            } else if (noiseValue > -0.5) {
+                std::cout << "-";
+            } else if (noiseValue > -0.9) {
+                std::cout << ".";
+            } else {
+                std::cout << " ";
+            }
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
 }
 
 void generateChunk(uint32_t heightSeed, uint32_t temperatureSeed, uint32_t qualitySeed, uint32_t chunkX, uint32_t chunkZ) {
     for (float x = chunkX * 16; x < chunkX * 16 + 16; x++) {
         for (float z = chunkZ * 16; z < chunkZ * 16 + 16; z++) {
-            float noiseValue = SimplexNoise(heightSeed, 0.01).fractal(6, x, z);
+            float noiseValue = SimplexNoise(heightSeed, 0.01).fractal(5, x, z);
             if (noiseValue > 0.5) {
                 //std::cout << "M";
             } else if (noiseValue < -0.5) {
