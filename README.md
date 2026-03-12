@@ -8,7 +8,7 @@ Inline suggestions were used to speed up coding. The AI chat feature was used to
 
 In general, I only used AI code that I understand and that I was going to write myself, rather than letting AI do all the work.
 
-I only used Github Copilot free tier, never paid a cent.
+I only used Github Copilot free tier, never paid a cent. Can only use it for like 2 or 3 days a month anyway.
 
 External chat applications like ChatGPT were not and never will be used.
 
