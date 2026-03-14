@@ -1,0 +1,10 @@
+^C:\USERS\LUKEHELL\BLIND-FACTORY-GAME\BUILD\CMAKEFILES\E00D4A09D1011BB4C034B510F088251B\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/lukehell/Blind-Factory-Game -BC:/Users/lukehell/Blind-Factory-Game/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/lukehell/Blind-Factory-Game/build/blindfactory.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
