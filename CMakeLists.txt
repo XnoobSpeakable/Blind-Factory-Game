@@ -33,5 +33,7 @@ add_subdirectory(vendored/SDL3_mixer EXCLUDE_FROM_ALL)
 
 add_executable(blindfactory WIN32 blindfactory.cpp SimplexNoise.cpp SimplexNoise.h)
 
+target_include_directories(blindfactory PRIVATE vendored/include)
+
 # Link to the actual SDL3 library.
 target_link_libraries(blindfactory PRIVATE SDL3::SDL3 SDL3_mixer::SDL3_mixer)
