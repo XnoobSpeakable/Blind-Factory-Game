@@ -2,9 +2,14 @@
 /build/CMakeFiles/
 /build/vendored/
 /build/assetbackup/
+/build/x64
+/build/*.vcxproj
+/build/*.vcxproj.filters
+/build/b*
 /build/*.cmake
 /build/*.txt
 /build/Makefile
+/build/Debug
 /build/Release/b*
 /build/Release/l*
 /build/Release/worlds
