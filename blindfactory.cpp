@@ -19,15 +19,15 @@
 #include "SimplexNoise.h"
 
 // Serialization stuff
-// #include <bitsery/bitsery.h>
-// #include <bitsery/adapter/buffer.h>
-// #include <bitsery/traits/vector.h>
-// #include <bitsery/traits/string.h>
+#include <bitsery/bitsery.h>
+#include <bitsery/adapter/buffer.h>
+#include <bitsery/traits/vector.h>
+#include <bitsery/traits/string.h>
 
 // Serialization stuff
-// using Buffer = std::vector<uint8_t>;
-// using OutputAdapter = bitsery::OutputBufferAdapter<Buffer>;
-// using InputAdapter = bitsery::InputBufferAdapter<Buffer>;
+using Buffer = std::vector<uint8_t>;
+using OutputAdapter = bitsery::OutputBufferAdapter<Buffer>;
+using InputAdapter = bitsery::InputBufferAdapter<Buffer>;
 
 // Application running state
 bool running = true;
@@ -48,7 +48,9 @@ int32_t rn() {
 // World gen stuff
 std::array<bool, 6> worlds = {0};
 int8_t worldCount = 5;
-int32_t seed;
+int32_t heightSeed;
+int32_t temperatureSeed;
+int32_t qualitySeed;
 
 // Audio engine init
 bool audiosuccess = MIX_Init();
@@ -70,14 +72,16 @@ class Block {
         bool interactable;
         bool breakable;
         bool hasData;
+        uint16_t breaksTo;
     public:
-        Block(std::string ingroup, std::string inname, uint16_t inhardness, bool ininteractable, bool inbreakable, bool inhasData) {
+        Block(std::string ingroup, std::string inname, uint16_t inhardness, bool ininteractable, bool inbreakable, bool inhasData, uint16_t inBreaksTo = 75) {
             group = ingroup;
             name = inname;
             hardness = inhardness;
             interactable = ininteractable;
             breakable = inbreakable;
             hasData = inhasData;
+            breaksTo = inBreaksTo;
         }
         const std::string& getGroup() {
             return group;
@@ -97,14 +101,16 @@ class Block {
         bool hasBlockData() {
             return hasData;
         }
+        uint16_t getBreaksTo() {
+            return breaksTo;
+        }
 };
 
 
 
 // Block ID organization is by worldgen criteria
 auto blocks{std::to_array<Block>({
-    // Extremely cold biome
-    // Low elevation
+    // too complicated for now, keeping just in case
     /*
     {"liquids/natural", "very_cold_water", 0, false, false, false},
     {"solids/other", "deep_ice", 150, false, true, false},
@@ -112,112 +118,115 @@ auto blocks{std::to_array<Block>({
     {"solids/other", "ice", 120, false, true, false},
     {"solids/other", "pure_snow", 10, false, true, false},
     */
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
+
+    // Extremely cold biome
+    // Low elevation
+    {"solids/other", "ice", 120, false, true, false}, //0
+    {"unobtainables", "redirect", 0, false, false, false, 0},
+    {"unobtainables", "redirect", 0, false, false, false, 0},
+    {"unobtainables", "redirect", 0, false, false, false, 0},
+    {"unobtainables", "redirect", 0, false, false, false, 0},
     // Medium elevation
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false}, //5
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
     // High elevation
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false}, //10
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
 
     // Cold biome
     //Low elevation
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false}, //15
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
     // Medium elevation
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
     // High elevation
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
 
     // Temperate biome
     //Low elevation
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false}, //30
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
     // Medium elevation
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
+    {"solids/dirts", "dirt", 50, false, true, false}, //35
+    {"unobtainables", "redirect", 0, false, false, false, 35},
+    {"unobtainables", "redirect", 0, false, false, false, 35},
+    {"unobtainables", "redirect", 0, false, false, false, 35},
+    {"unobtainables", "redirect", 0, false, false, false, 35},
     // High elevation
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
 
     // Hot biome
     //Low elevation
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false}, //45
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
     // Medium elevation
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
+    {"solids/dirts", "dry_dirt", 60, false, true, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
     // High elevation
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
 
     // Extremely hot biome
     //Low elevation
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false}, //60
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
     // Medium elevation
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false}, //65
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
     // High elevation
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
-    {"unobtainables", "reserved", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false}, //70
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
+    {"unobtainables", "redirect", 0, false, false, false},
 
 
-    {"unobtainables", "air", 0, false, false, false},
+    {"unobtainables", "air", 0, false, false, false}, //75
 
     {"liquids/natural", "warm_water", 0, false, false, false},
     {"liquids/natural", "cold_water", 0, false, false, false},
     {"liquids/natural", "lava", 0, false, false, false},
     {"liquids/natural", "magma", 0, false, false, false},
-    {"liquids/natural", "crude_oil", 0, false, false, false},
+    {"liquids/natural", "crude_oil", 0, false, false, false}, //80
 
 
 
@@ -225,20 +234,19 @@ auto blocks{std::to_array<Block>({
     {"solids/stones", "chalk", 60, false, true, false},
     {"solids/stones", "claystone", 80, false, true, false},
     {"solids/stones", "basalt", 200, false, true, false},
-    {"solids/stones", "sandstone", 90, false, true, false},
+    {"solids/stones", "sandstone", 90, false, true, false}, //85
     {"solids/stones", "limestone", 100, false, true, false},
     {"solids/stones", "mudstone", 70, false, true, false},
     {"solids/stones", "shale", 110, false, true, false},
     {"solids/stones", "gneiss", 180, false, true, false},
-    {"solids/stones", "diorite", 130, false, true, false},
+    {"solids/stones", "diorite", 130, false, true, false}, //90
     {"solids/stones", "gravel", 50, false, true, false},
 
-    {"solids/dirts", "dirt", 50, false, true, false},
+
     {"solids/dirts", "wet_dirt", 50, false, true, false},
-    {"solids/dirts", "dry_dirt", 60, false, true, false},
     {"solids/dirts", "beach_sand", 40, false, true, false},
     {"solids/dirts", "desert_sand", 40, false, true, false},
-    {"solids/dirts", "clay", 40, false, true, false},
+    {"solids/dirts", "clay", 40, false, true, false}, //95
 })};
 
 Block getBlock(uint16_t id) {
@@ -379,7 +387,52 @@ std::array<uint16_t, 256> generateChunk(uint32_t heightSeed, uint32_t temperatur
             uint8_t height = std::floor((heightNoiseValue + 1) * 10);
             uint8_t temperature = std::floor((temperatureNoiseValue + 1) * 10);
 
-            
+            uint8_t temperatureLevel;
+            uint8_t heightLevel;
+            uint8_t qualityLevel;
+
+            if (temperature >= 18) {
+                temperatureLevel = 4;
+            } else if (temperature >= 13) {
+                temperatureLevel = 3;
+            } else if (temperature >= 7) {
+                temperatureLevel = 2;
+            } else if (temperature >= 2) {
+                temperatureLevel = 1;
+            } else {
+                temperatureLevel = 0;
+            }
+
+            if (height > 15) {
+                heightLevel = 2;
+            } else if (height < 5) {
+                heightLevel = 1;
+            }
+            else {
+                heightLevel = 0;
+            }
+
+            if (quality >= 18) {
+                qualityLevel = 4;
+            } else if (quality >= 13) {
+                qualityLevel = 3;
+            } else if (quality >= 7) {
+                qualityLevel = 2;
+            } else if (quality >= 2) {
+                qualityLevel = 1;
+            } else {
+                qualityLevel = 0;
+            }
+
+            uint16_t generatedID = temperatureLevel * 15 + heightLevel * 5 + qualityLevel;
+
+            // Handle redirect blocks;
+            Block genBlock = getBlock(generatedID);
+            if(genBlock.getName() == "redirect") {
+                generatedID = genBlock.getBreaksTo();
+            }
+
+            chunk[i] = generatedID;
 
             i++;
         }
@@ -411,12 +464,14 @@ void generateWorld() {
     std::filesystem::path worldPath{worldPathString};
     std::fstream worldFile;
     std::string magicString = "bfwf";
-    seed = rn();
+    temperatureSeed = rn();
+    heightSeed = rn();
+    qualitySeed = rn();
     worldFile.open (worldPath, std::ios::in | std::ios::out | std::ios::binary | std::ios::app);
     worldFile.write((char*)&magicString, magicString.length());
-    worldFile.write((char*)&seed, sizeof(seed));
+    //worldFile.write((char*)&seed, sizeof(seed));
     worldFile.close();
-    std::cout << "Generated world " << std::to_string(world) << " with seed " << std::to_string(seed) << std::endl;
+    std::cout << "Generated world " << std::to_string(world) << std::endl;
     std::cout << "World file saved to " << worldPath << std::endl;
     player.gameState = 1;
 }
@@ -658,7 +713,7 @@ int main(int argc, char *argv[]) {
                 accumulateZ = 0;
             }
             
-            std::array<uint16_t, 256> currentChunk = generateChunk(seed, seed, seed, getChunkX(player.x), getChunkZ(player.z));
+            std::array<uint16_t, 256> currentChunk = generateChunk(temperatureSeed, heightSeed, qualitySeed, getChunkX(player.x), getChunkZ(player.z));
         }
         
         // FPS stuff
