@@ -12,6 +12,7 @@
 /build/Debug
 /build/Release/b*
 /build/Release/l*
+/build/Release/*.dll
 /build/Release/worlds
 vc140.pdb
 vendored/SDL
