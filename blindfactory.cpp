@@ -13,6 +13,7 @@
 #include <bit>
 #include <array>
 #include <limits>
+#include <map>
 
 // Simplex noise/worldgen library
 #include "SimplexNoise.h"
@@ -517,7 +518,11 @@ int main(int argc, char *argv[]) {
 
     std::cout << getBlock(0).getGroup() << std::endl;
 
-    debugWorldGen(rn(), rn(), rn());
+    //debugWorldGen(rn(), rn(), rn());
+
+    std::map<int,int> idMap =  {{0, 0}, {1, 0}, {2, 0}};
+
+    std::cout << idMap[0] << idMap[1] << idMap[2] << std::endl;
 
     // Game loop
     while(running) {
